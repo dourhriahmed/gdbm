@@ -1,0 +1,120 @@
+Q1: Orders in which a client is involved in any role (making and/or payment).
+QUERY Q1_OrdersOfClient AS
+MATCH (c:Client)-[?:?]-(O:Order)
+WHERE c.login=parameter
+RETURN O.all;
+-------------------------------------
+Q2: Products of a seller, in which the warranty exceeds six months.
+QUERY Q2_ProductsOfSellerWithWarranty AS
+MATCH (p:Product)-[pvd:Provides]-(S:Seller)
+WHERE S.seller_gov_id=parameter
+RETURN pvd.warranty>6;
+-------------------------------------
+Q3: Company-type clients making orders in a given date.
+QUERY Q3_CompanyClientsOrderedInDate AS
+MATCH (c:Client)-[m:makes]-(o:Order)
+WHERE c.type="company" and o.odatetime=parameter
+RETURN c.all;
+-------------------------------------
+Q4: From a given order of a client, retrieve the next order.
+QUERY Q4_nextOrderOfClient AS
+MATCH (C1:Client)-[m:makes]-(O1:Order)
+WITH (C2:Client)-[m:makes]-(O2:Order)
+WHERE C1.login=parameter1 and C2.login=C1.login and 
+      O1.sequenceNumber=parameter2 and O2.sequenceNumber=O1.sequenceNumber+1
+RETURN O2.all;
+-------------------------------------
+Q5: Categories of products purchased by a given client.
+QUERY Q5_categoriesPurchasedByClient AS
+MATCH (c:Client)-<m:makes>-(o:Order)-<co:containsOrder>-(cnt:Contains)-<cp:containsProduct>-(P:Product)-<comp:is_composed_of>-(CT:Category)
+WHERE c.login=parameter
+RETURN CT.code,CT.cname;
+-------------------------------------
+Q6: List of disabled cards of the label "Master".
+QUERY Q6_DisabledMasterCard AS
+MATCH (dc:DebitCard)
+WHERE dc.label="Master"
+RETURN dc.all;
+-------------------------------------
+Q7: List of "Master" cards used in a given date, sorted by descending chronological order of payment time.
+QUERY Q7_MasterCardUsedInADate AS
+MATCH (dc:DebitCard)-[cnc:concern1]-(p:Payment)
+WHERE dc.label="Master" and p.pm_datetime=parameter
+RETURN dc.all;
+-------------------------------------
+Q8: List of "Visa" cards from a given bank.
+QUERY Q8_VisaCardGivenBank AS
+MATCH (dc:DebitCard)
+WHERE dc.label="Visa" and dc.bank=parameter
+RETURN dc.all;
+-------------------------------------
+Q9: Clients of a given town.
+QUERY Q9_ClientsTown AS
+MATCH (c:Client)-[h:has]-(a:Address)
+WHERE a.town=parameter
+RETURN c.all;
+-------------------------------------
+Q10: Orders of a specific client in a given date with shipping fees are from 100 to 10000.
+QUERY Q10_OrdersClientLimitedShippingFees AS
+MATCH (c:Client)-[m:makes]-(o:order)
+WHERE c.login=parameter1 and o.odatetime=parameter2 and shippingFee>=100 and shippingFee<=10000
+RETURN o.all;
+-------------------------------------
+Q11: Pairs of clients sharing the same credit card.
+MATCH (c1:Client)-[:pays]->(:Order)-[:is_composed_of]->(:Payment)-[:concern2]->(cc:CreditCard),
+      (c2:Client)-[:pays]->(:Order)-[:is_composed_of]->(:Payment)-[:concern2]->(cc)
+WHERE c1.login <> c2.login
+RETURN c1.login, c2.login, cc.card_number;
+-------------------------------------
+Q12: List of clients having paid orders from the same IP. The result must be sorted by ip address order.
+MATCH (c1:Client)-[:makes]->(:Order)-[:is_composed_of]->(:Payment)-[:uses]->(ra:RemoteAccess),
+      (c2:Client)-[:makes]->(:Order)-[:is_composed_of]->(:Payment)-[:uses]->(ra)
+WHERE c1.login <> c2.login
+RETURN c1.login, c2.login, ra.ip
+ORDER BY ra.ip ASC;
+-------------------------------------
+Q13: The orders paid with cards owned by other clients.
+MATCH (buyer:Client)-[:makes]->(o:Order)-[:is_composed_of]->(p:Payment)-[:concern2]->(cc:CreditCard),
+      (owner:Client)-[:pays]->(:Order)-[:is_composed_of]->(:Payment)-[:concern2]->(cc)
+WHERE buyer.login <> owner.login
+RETURN buyer.login, owner.login, cc.card_number, o.oid;
+-------------------------------------
+Q14: Modify the VAT Rate of a given category.
+QUERY Q11_UpdateVatRate AS
+MATCH (ctg:Category)
+WHERE ctg.code=parameter
+SET ctg.VatRate = newValue;
+-------------------------------------
+Q15: Change the status of a given banking card.
+QUERY Q12_UpdateStatusDebitCard AS
+MATCH (cc:CreditCard)
+WHERE cc.card_number=parameter
+SET cc.status = newValue
+UNON
+MATCH (dc:DebitCard)
+WHERE dc.card_number=parameter
+SET dc.status = newValue;
+-------------------------------------
+Q16: Change the warranty duration offered by a seller for a product.
+QUERY Q13_UpdateWarrantyForProductBySeller AS
+MATCH (p:Product)-[pvd:Provides]-(s:Seller)
+WHERE p.reference=parameter1 and s.seller_gov_id=parameter2
+SET pvd.warranty = newValue;
+-------------------------------------
+Q17: Update the phone number of a client.
+QUERY Q14_UpdatePhoneClient AS
+MATCH (c:Client)
+WHERE c.login=parameter
+SET c.phone=newValue;
+-------------------------------------
+Q18: Delete a product from the catalog
+QUERY Q15_deleteProduct AS
+MATCH (p:Product)-[pvd:Provides]-(s:Seller)
+WHERE p.reference=parameter1 and s.seller_gov_id=parameter2
+DELETE p;
+-------------------------------------
+Q19: Remove orders made before to 2014
+QUERY Q16_deleteOldOrders AS
+MATCH (o:Order)
+WHERE o.odatetime<"2014"
+DELETE o;
