@@ -74,54 +74,54 @@ NodeLabel RemoteAccess{
 RelType Referral{
  NodeLabel Client
  Roles referrer,referred
- Cardinality <0-n>,<0-1>
+ Multiplicity <0..*>,<0..1>
 }
 RelType Provides{
  NodeLabel Seller,Product
- Cardinality <1-n>,<1-n>
+ Multiplicity <1..*>,<1..*>
  Property inStockQty Integer,warranty Integer
 }
 RelType Contains_Order{
  NodeLabel Contains,Order
- Cardinality <?-?>,<1-n>
+ Multiplicity <?-?>,<1..*>
 }
 RelType Contains_Product{
  NodeLabel Contains,Product
- Cardinality <?-?>,<1-n>
+ Multiplicity <?-?>,<1..*>
 }
 RelType Contains_Seller{
  NodeLabel Contains,Seller
- Cardinality <?-?>,<1-n>
+ Multiplicity <?-?>,<1..*>
 }
 RelType pays{
  NodeLabel Client,Order
- Cardinality <1-1>,<0-n>
+ Multiplicity <1..1>,<0..*>
 }
 RelType makes{
  NodeLabel Client,Order
- Cardinality <1-1>,<0-n>
+ Multiplicity <1..1>,<0..*>
 }
 RelType Concerns1{
  NodeLabel Payment,DebitCard
- Cardinality <0-n>,<0-1>
+ Multiplicity <0..*>,<0..1>
 }
 RelType Concerns2{
  NodeLabel Payment,CreditCard
- Cardinality <0-n>,<0-1>
+ Multiplicity <0..*>,<0..1>
 }
 RelType uses{
  NodeLabel Payment,RemoteAccess
- Cardinality <0-1>,<1-1>
+ Multiplicity <0..1>,<1..1>
 }
 RelType has{
  NodeLabel Client,Address
- Cardinality <0-n>,<1-1>
+ Multiplicity <0..*>,<1..1>
 }
 RelType is_composed_of{
 NodeLabel Category,Product
-Cardinality <1-1>,<1-n>
+Multiplicity <1..1>,<1..*>
 }
 RelType is_composed_of2{
  NodeLabel Order,Payment
- Cardinality <1-1>,<0-1>
+ Multiplicity <1..1>,<0..1>
 }
