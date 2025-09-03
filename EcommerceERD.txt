@@ -1,65 +1,65 @@
-Entity Client{
+Class Client{
  login String
  password String
  phone Integer
  creationDate Datetime
 }
-Entity Person extends Client{
+Class Person extends Client{
  firstName String
  lastName String
 }
-Entity Company extends Client{
+Class Company extends Client{
  name String
  gov_id String
 }
-Entity Address{
+Class Address{
  addr_id String
  road String
  district String
  town String
  zipcode Integer
 }
-Entity Order{
+Class Order{
  oid Integer
  odatetime Datetime
  shippingFee Float
  total Float
  sequenceNumber Integer
 }
-Entity Product{
+Class Product{
  reference String
  designation String
  description String
 }
-Entity Seller{
+Class Seller{
  seller_gov_id Integer
  companyName String
 }
-Entity Category{
+Class Category{
  code String
  cname String
  vatRate Float
 }
-Entity BankCard{
+Class BankCard{
  card_number Integer
  expireDate Date
  cvc Integer
  status Boolean
  bank String
 }
-Entity CreditCard extends BankCard{
+Class CreditCard extends BankCard{
  interestRate Float
  limit Float
 }
-Entity DebitCard extends BankCard{
+Class DebitCard extends BankCard{
  balance Float
  label String
 }
-Entity Payment{
+Class Payment{
  pm_number Integer
  pm_datetime Datetime
 }
-Entity RemoteAccess{
+Class RemoteAccess{
  idAccess Integer
  timeAccess Datetime
  ip String
@@ -67,45 +67,45 @@ Entity RemoteAccess{
  OSNameVersion String
 }
 Association Referral{
- Entity Client
+ Class Client
  Roles referrer,referred
- Cardinality <0-n>,<0-1>
+ Multiplicity <0-*>,<0-1>
 }
 Association Contains{
- Entity Order,Seller,Product
- Cardinality <0-n>,<1-n>,<1-n>
+ Class Order,Seller,Product
+ Multiplicity <0-*>,<1-*>,<1-*>
  Attribute orderedQty Integer,unitPrice Float,discountRate Float
 }
 Association Provides{
- Entity Seller,Product
- Cardinality <1-n>,<1-n>
+ Class Seller,Product
+ Multiplicity <1-*>,<1-*>
  Attribute inStockQty Integer,warranty Integer
 }
 Association pays{
- Entity Client,Order
- Cardinality <1-1>,<0-n>
+ Class Client,Order
+ Multiplicity <1-1>,<0-*>
 }
 Association makes{
- Entity Client,Order
- Cardinality <1-1>,<0-n>
+ Class Client,Order
+ Multiplicity <1-1>,<0-*>
 }
 Association Concerns{
- Entity Payment,BankCard
- Cardinality <0-n>,<1-1>
+ Class Payment,BankCard
+ Multiplicity <0-*>,<1-1>
 }
 Association uses{
- Entity Payment,RemoteAccess
- Cardinality <0-1>,<1-1>
+ Class Payment,RemoteAccess
+ Multiplicity <0-1>,<1-1>
 }
 Aggregation{
- Entity Client,Address
- Cardinality <1-1>
+ Class Client,Address
+ Multiplicity <1-1>
 }
 Composition{
- Entity Order,Payment
- Cardinality <0-1>
+ Class Order,Payment
+ Multiplicity <0-1>
 }
 Composition{
-Entity Category,Product
-Cardinality <1-n>
+Class Category,Product
+Multiplicity <1-*>
 }
